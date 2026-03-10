@@ -1,15 +1,17 @@
 /* Colors */
-$primary-color: #75ead4;
+:root {
+  --primary-color: #75ead4;
 
-$box-shadow-color: #110e15;
+  --box-shadow-color: #110e15;
 
-$background-color-opacity: rgba(0, 0, 0, 0.8);
+  --background-color-opacity: rgba(0, 0, 0, 0.8);
 
-$text-color-primary: #f5f2fa;
-$text-color-secondary: #d1cae0;
+  --text-color-primary: #f5f2fa;
+  --text-color-secondary: #d1cae0;
 
-$background-color-primary: #2e293a;
-$background-color-secondary: #9f93b8;
-$background-color-ternary: #1c1823;
+  --background-color-primary: #2e293a;
+  --background-color-secondary: #9f93b8;
+  --background-color-ternary: #1c1823;
 
-$button-background-color-primary: #453d53;
+  --button-background-color-primary: #453d53;
+}

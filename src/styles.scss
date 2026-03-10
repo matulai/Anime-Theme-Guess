@@ -1,3 +1,19 @@
 @use 'colors.scss';
 @use 'fonts.scss';
 @use 'reset.scss';
+
+html {
+  font-size: 16px;
+}
+
+body {
+  background-color: var(--background-color-primary);
+  font-family: 'Nonito', sans-serif;
+  margin: 0;
+}
+
+a {
+  display: block;
+  cursor: pointer;
+  text-decoration: none;
+}
