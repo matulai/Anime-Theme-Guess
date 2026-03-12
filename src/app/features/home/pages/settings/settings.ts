@@ -4,14 +4,13 @@ import { Router } from '@angular/router';
 import { Button } from '@shared/components/button/button';
 import { ButtonOptions } from '@shared/components/button-options/button-options';
 import { InputVolume } from '@features/home/components/input-volume/input-volume';
+import { Tooltip } from '@features/home/components/tooltip/tooltip';
 
 import { SettingsService } from '@core/services/settings-service';
-import { GameSetting } from '@features/home/model/GameSetting';
-import { SoundSetting } from '@features/home/model/SoundSetting';
 
 @Component({
   selector: 'app-settings',
-  imports: [Button, ButtonOptions, InputVolume],
+  imports: [Button, ButtonOptions, InputVolume, Tooltip],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })

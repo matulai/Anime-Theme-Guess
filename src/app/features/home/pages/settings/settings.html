@@ -6,24 +6,7 @@
         <div class="settings__section__group">
           <div class="settings__section__group__info">
             <span class="settings__section__group__text">{{ setting.settingTitle }}</span>
-            <div class="settings__section__group__tooltip">
-              <span class="settings__section__group__tooltip__button">i</span>
-              <div class="settings__section__group__tooltip__description">
-                @for (paragraph of setting.description; track $index) {
-                  @if (paragraph.type === 'paragraph') {
-                    <p>
-                      @for (part of paragraph.content; track $index) {
-                        @if (part.bold) {
-                          <b>{{ part.text }}</b>
-                        } @else {
-                          <span>{{ part.text }}</span>
-                        }
-                      }
-                    </p>
-                  }
-                }
-              </div>
-            </div>
+            <app-tooltip [description]="setting.description" />
           </div>
           <app-button-options
             [selectedOption]="setting.selectedOption"
@@ -41,24 +24,7 @@
         <div class="settings__section__group">
           <div class="settings__section__group__info">
             <span class="settings__section__group__text">{{ setting.settingTitle }}</span>
-            <div class="settings__section__group__tooltip">
-              <span class="settings__section__group__tooltip__button">i</span>
-              <div class="settings__section__group__tooltip__description">
-                @for (paragraph of setting.description; track $index) {
-                  @if (paragraph.type === 'paragraph') {
-                    <p>
-                      @for (part of paragraph.content; track $index) {
-                        @if (part.bold) {
-                          <b>{{ part.text }}</b>
-                        } @else {
-                          <span>{{ part.text }}</span>
-                        }
-                      }
-                    </p>
-                  }
-                }
-              </div>
-            </div>
+            <app-tooltip [description]="setting.description" />
           </div>
           <app-input-volume
             [volume]="setting.volume"
