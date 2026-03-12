@@ -23,29 +23,19 @@ export class Settings {
     this.router.navigate([route]);
   }
 
-  handleGameSettingOptionClick(groupIndex: number, settingIndex: number, option: string) {
-    this.settingsService.gameSettings.update((settings) => {
-      const newSettings = settings.map((group) => [...group]);
-
-      newSettings[groupIndex][settingIndex] = {
-        ...newSettings[groupIndex][settingIndex],
-        selectedOption: option,
-      };
-
-      return newSettings;
-    });
+  handleGameSettingOptionClick(settingIndex: number, option: string) {
+    this.settingsService.gameSettings.update((settings) =>
+      settings.map((setting, index) =>
+        index === settingIndex ? { ...setting, selectedOption: option } : setting,
+      ),
+    );
   }
 
-  handleSoundSettingOptionClick(groupIndex: number, settingIndex: number, volume: number) {
-    this.settingsService.soundSettings.update((settings) => {
-      const newSettings = settings.map((group) => [...group]);
-
-      newSettings[groupIndex][settingIndex] = {
-        ...newSettings[groupIndex][settingIndex],
-        volume: volume,
-      };
-
-      return newSettings;
-    });
+  handleSoundSettingOptionClick(settingIndex: number, volume: number) {
+    this.settingsService.soundSettings.update((settings) =>
+      settings.map((setting, index) =>
+        index === settingIndex ? { ...setting, volume: volume } : setting,
+      ),
+    );
   }
 }
