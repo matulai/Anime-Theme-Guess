@@ -1,0 +1,10 @@
+<div class="input-volume">
+  <input
+    type="range"
+    min="0"
+    max="100"
+    [value]="volume()"
+    (input)="onVolumeChange($event)"
+    [style.background]="sliderBackground()"
+  />
+</div>
