@@ -1,3 +1,22 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+import { Settings } from '@features/home/pages/settings/settings';
+import { Layout } from '@core/layout/layout';
+import { Menu } from '@features/home/pages/menu/menu';
+
+export const routes: Routes = [
+  {
+    path: '',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: Menu,
+      },
+      {
+        path: 'settings',
+        component: Settings,
+      },
+    ],
+  },
+];
