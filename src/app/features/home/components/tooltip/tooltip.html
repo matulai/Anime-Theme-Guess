@@ -1,0 +1,18 @@
+<div class="tooltip">
+  <span class="tooltip__button">i</span>
+  <div class="tooltip__description">
+    @for (paragraph of description(); track $index) {
+      @if (paragraph.type === 'paragraph') {
+        <p>
+          @for (part of paragraph.content; track $index) {
+            @if (part.bold) {
+              <b>{{ part.text }}</b>
+            } @else {
+              <span>{{ part.text }}</span>
+            }
+          }
+        </p>
+      }
+    }
+  </div>
+</div>
