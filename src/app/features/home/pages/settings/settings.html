@@ -1,38 +1,70 @@
 <div class="settings">
   <section class="settings__section">
     <h3 class="settings__title">GAME SETTINGS</h3>
-    @for (groupSettings of settingsService.gameSettings(); track $index; let gi = $index) {
+    @for (setting of settingsService.gameSettings(); track $index; let gi = $index) {
       <div class="settings__section__grid">
-        @for (setting of groupSettings; track setting.settingTitle; let si = $index) {
-          <div class="settings__section__group">
-            <div class="settings__section__group__info">
-              <span class="settings__section__group__text">{{ setting.settingTitle }}</span>
+        <div class="settings__section__group">
+          <div class="settings__section__group__info">
+            <span class="settings__section__group__text">{{ setting.settingTitle }}</span>
+            <div class="settings__section__group__tooltip">
+              <span class="settings__section__group__tooltip__button">i</span>
+              <div class="settings__section__group__tooltip__description">
+                @for (paragraph of setting.description; track $index) {
+                  @if (paragraph.type === 'paragraph') {
+                    <p>
+                      @for (part of paragraph.content; track $index) {
+                        @if (part.bold) {
+                          <b>{{ part.text }}</b>
+                        } @else {
+                          <span>{{ part.text }}</span>
+                        }
+                      }
+                    </p>
+                  }
+                }
+              </div>
             </div>
-            <app-button-options
-              [selectedOption]="setting.selectedOption"
-              [options]="setting.options"
-              [onClick]="(option) => handleGameSettingOptionClick(gi, si, option)"
-            />
           </div>
-        }
+          <app-button-options
+            [selectedOption]="setting.selectedOption"
+            [options]="setting.options"
+            [onClick]="(option) => handleGameSettingOptionClick(gi, option)"
+          />
+        </div>
       </div>
     }
   </section>
   <section class="settings__section">
     <h3 class="settings__title">SOUND SETTINGS</h3>
-    @for (groupSettings of settingsService.soundSettings(); track $index; let gi = $index) {
+    @for (setting of settingsService.soundSettings(); track $index; let gi = $index) {
       <div class="settings__section__grid">
-        @for (setting of groupSettings; track setting.settingTitle; let si = $index) {
-          <div class="settings__section__group">
-            <div class="settings__section__group__info">
-              <span class="settings__section__group__text">{{ setting.settingTitle }}</span>
+        <div class="settings__section__group">
+          <div class="settings__section__group__info">
+            <span class="settings__section__group__text">{{ setting.settingTitle }}</span>
+            <div class="settings__section__group__tooltip">
+              <span class="settings__section__group__tooltip__button">i</span>
+              <div class="settings__section__group__tooltip__description">
+                @for (paragraph of setting.description; track $index) {
+                  @if (paragraph.type === 'paragraph') {
+                    <p>
+                      @for (part of paragraph.content; track $index) {
+                        @if (part.bold) {
+                          <b>{{ part.text }}</b>
+                        } @else {
+                          <span>{{ part.text }}</span>
+                        }
+                      }
+                    </p>
+                  }
+                }
+              </div>
             </div>
-            <app-input-volume
-              [volume]="setting.volume"
-              [onClick]="(volume) => handleSoundSettingOptionClick(gi, si, volume)"
-            />
           </div>
-        }
+          <app-input-volume
+            [volume]="setting.volume"
+            [onClick]="(volume) => handleSoundSettingOptionClick(gi, volume)"
+          />
+        </div>
       </div>
     }
   </section>
