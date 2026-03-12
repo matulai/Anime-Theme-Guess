@@ -1,0 +1,51 @@
+<div class="button-options-container">
+  <button class="button" (click)="toggleShowOptions()">
+    {{ selectedOption().toUpperCase() }}
+    <svg width="7" height="14" viewBox="0 0 7 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g clip-path="url(#clip0_33_170)">
+        <path
+          d="M3.00489 1.13203C3.27833 0.790237 3.72239 0.790237 3.99583 1.13203L6.79583 4.63204C6.99708 4.8836 7.05614 5.25821 6.94676 5.58633C6.83739 5.91446 6.58364 6.12774 6.29926 6.12774L0.699265 6.125C0.417077 6.125 0.16114 5.91172 0.0517646 5.5836C-0.0576104 5.25547 0.00363965 4.88086 0.202702 4.6293L3.0027 1.1293L3.00489 1.13203ZM3.00489 12.8707L0.20489 9.37071C0.00363965 9.11915 -0.0554229 8.74454 0.0539521 8.41641C0.163327 8.08829 0.417077 7.875 0.701452 7.875H6.30145C6.58364 7.875 6.83958 8.08829 6.94895 8.41641C7.05833 8.74454 6.99708 9.11915 6.79801 9.37071L3.99801 12.8707C3.72458 13.2125 3.28051 13.2125 3.00708 12.8707H3.00489Z"
+          fill="currentColor"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_33_170">
+          <rect width="7" height="14" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  </button>
+  <div class="button-options-list" [style.display]="showOptions() ? '' : 'none'">
+    @for (option of options(); track $index) {
+      <button
+        class="button-option"
+        [class]="selectedOption() === option ? 'active' : ''"
+        (click)="handleClick(option)"
+      >
+        {{ option }}
+        @if (selectedOption() === option) {
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M16.6666 5L7.49992 14.1667L3.33325 10"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        }
+      </button>
+    }
+  </div>
+</div>
+<button
+  class="background-button"
+  [style.display]="showOptions() ? '' : 'none'"
+  (click)="toggleShowOptions()"
+></button>
