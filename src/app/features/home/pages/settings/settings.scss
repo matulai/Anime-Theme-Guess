@@ -1,0 +1,49 @@
+.settings {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 48px;
+  gap: 24px;
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    &__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+    }
+
+    &__group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      &__info {
+        display: flex;
+        gap: 8px;
+      }
+
+      &__text {
+        font-weight: 400;
+        letter-spacing: 0.1rem;
+        text-align: left;
+        color: var(--text-color-primary);
+      }
+    }
+  }
+
+  &__title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.1rem;
+    text-align: left;
+    color: var(--text-color-secondary);
+  }
+
+  &__buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+}

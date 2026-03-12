@@ -1,0 +1,42 @@
+<div class="settings">
+  <section class="settings__section">
+    <h3 class="settings__title">GAME SETTINGS</h3>
+    @for (groupSettings of settingsService.gameSettings(); track $index; let gi = $index) {
+      <div class="settings__section__grid">
+        @for (setting of groupSettings; track setting.settingTitle; let si = $index) {
+          <div class="settings__section__group">
+            <div class="settings__section__group__info">
+              <span class="settings__section__group__text">{{ setting.settingTitle }}</span>
+            </div>
+            <app-button-options
+              [selectedOption]="setting.selectedOption"
+              [options]="setting.options"
+              [onClick]="(option) => handleGameSettingOptionClick(gi, si, option)"
+            />
+          </div>
+        }
+      </div>
+    }
+  </section>
+  <section class="settings__section">
+    <h3 class="settings__title">SOUND SETTINGS</h3>
+    @for (groupSettings of settingsService.soundSettings(); track $index; let gi = $index) {
+      <div class="settings__section__grid">
+        @for (setting of groupSettings; track setting.settingTitle; let si = $index) {
+          <div class="settings__section__group">
+            <div class="settings__section__group__info">
+              <span class="settings__section__group__text">{{ setting.settingTitle }}</span>
+            </div>
+            <app-input-volume
+              [volume]="setting.volume"
+              [onClick]="(volume) => handleSoundSettingOptionClick(gi, si, volume)"
+            />
+          </div>
+        }
+      </div>
+    }
+  </section>
+  <div class="settings__buttons">
+    <app-button [onClick]="() => navigateTo('')">BACK</app-button>
+  </div>
+</div>
