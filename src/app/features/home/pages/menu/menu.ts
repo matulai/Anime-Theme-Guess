@@ -14,8 +14,4 @@ export class Menu {
   navigateTo(route: string) {
     this.router.navigate([route]);
   }
-
-  startNewGame() {
-    console.log('STARTING A NEW GAME...');
-  }
 }
