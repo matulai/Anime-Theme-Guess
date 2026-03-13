@@ -1,0 +1,27 @@
+.loading-screen {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.6);
+
+  color: var(--text-color-primary);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0.1rem;
+  z-index: 1000;
+}
+
+.press {
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.3;
+  }
+}
