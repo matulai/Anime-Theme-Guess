@@ -1,0 +1,11 @@
+@if (state() !== 'hidden') {
+  <div class="loading-screen">
+    @if (state() === 'loading') {
+      <div>Loading...</div>
+    }
+
+    @if (state() === 'ready') {
+      <div class="press">Press any button to start</div>
+    }
+  </div>
+}
