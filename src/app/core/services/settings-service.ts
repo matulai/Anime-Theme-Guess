@@ -1,5 +1,7 @@
 import { Injectable, signal, effect } from '@angular/core';
 import { DEFAULT_GAME_SETTINGS, DEFAULT_SOUND_SETTINGS } from '@core/constants/default-settings';
+import { GameSettingsMap } from '@features/home/model/GameSetting';
+import { SoundSettingsMap } from '@features/home/model/SoundSetting';
 
 @Injectable({
   providedIn: 'root',
@@ -28,5 +30,25 @@ export class SettingsService {
     } catch {
       return defaultValue;
     }
+  }
+
+  getAllSettingsSimplified(): {
+    gameSettings: GameSettingsMap;
+    soundSettings: SoundSettingsMap;
+  } {
+    const simplifiedGameSettings = Object.fromEntries(
+      this.gameSettings().map(({ settingTitle, selectedOption }) => [settingTitle, selectedOption]),
+    );
+
+    const simplifiedSoundSettings = Object.fromEntries(
+      this.soundSettings().map(({ settingTitle, volume }) => [settingTitle, volume]),
+    );
+
+    const simplifiedSettings = {
+      gameSettings: simplifiedGameSettings,
+      soundSettings: simplifiedSoundSettings,
+    };
+
+    return simplifiedSettings;
   }
 }
