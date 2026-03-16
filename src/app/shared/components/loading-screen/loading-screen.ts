@@ -18,6 +18,7 @@ export class LoadingScreen {
   start() {
     if (this.state() === 'ready') {
       this.loadingService.hide();
+      this.loadingService.onPressAction();
     }
   }
 
