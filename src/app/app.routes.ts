@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { Settings } from '@features/home/pages/settings/settings';
 import { Layout } from '@core/layout/layout';
 import { Menu } from '@features/home/pages/menu/menu';
+import { Game } from '@features/game/pages/game/game';
 
 export const routes: Routes = [
   {
@@ -16,6 +17,10 @@ export const routes: Routes = [
       {
         path: 'settings',
         component: Settings,
+      },
+      {
+        path: 'game',
+        component: Game,
       },
     ],
   },
