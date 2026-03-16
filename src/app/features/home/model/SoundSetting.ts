@@ -5,3 +5,5 @@ export interface SoundSetting {
   volume: number;
   description: Description[];
 }
+
+export type SoundSettingsMap = Record<string, number>;

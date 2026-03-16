@@ -6,3 +6,5 @@ export interface GameSetting {
   options: string[];
   description: Description[];
 }
+
+export type GameSettingsMap = Record<string, string>;
