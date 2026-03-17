@@ -7,4 +7,11 @@ export interface GameSetting {
   description: Description[];
 }
 
-export type GameSettingsMap = Record<string, string>;
+export interface GameSettingOptions {
+  gameMode: string;
+  typingGraceTime: string;
+  timeDifficulty: string;
+  themesDifficulty: string;
+  themesPerDifficult: string;
+  mediaReveal: string;
+}

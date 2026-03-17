@@ -1,10 +1,11 @@
 import { inject, Injectable, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+
+import { SoundSettingOptions } from '@features/home/model/SoundSetting';
+import { GameSettingOptions } from '@features/home/model/GameSetting';
 import { ThemeTrack, Track } from '@features/game/model/Track';
 import { SettingsService } from './settings-service';
-import { GameSettingsMap } from '@features/home/model/GameSetting';
-import { SoundSettingsMap } from '@features/home/model/SoundSetting';
 import { ThemeApi } from './theme-api';
-import { firstValueFrom } from 'rxjs';
 
 type Difficulty = 'Easy' | 'Medium' | 'Hard' | 'Extreme';
 
@@ -21,19 +22,22 @@ export class GameService {
 
   async setupGame() {
     const settings: {
-      gameSettings: GameSettingsMap;
-      soundSettings: SoundSettingsMap;
+      gameSettings: GameSettingOptions;
+      soundSettings: SoundSettingOptions;
     } = this.settingsService.getAllSettingsSimplified();
 
     const tracks: Track[] = await firstValueFrom(
-      this.themeApi.getPlaylist(settings.gameSettings['Themes difficulty'] as Difficulty),
+      this.themeApi.getPlaylist(settings.gameSettings.themesDifficulty as Difficulty),
     );
     this.gameTrackQueue = this.shuffle(tracks).map((track) => this.mapToGameTrack(track));
+  }
 
-    this.preloadNextAudioTrack();
-    this.preloadNextVideoTrack();
+  getNextTrack() {
+    if (this.gameTrackQueue.length < 2) {
+      return;
+    }
 
-    this.nextTrack();
+    return this.gameTrackQueue[0];
   }
 
   nextTrack() {

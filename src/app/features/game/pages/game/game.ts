@@ -4,46 +4,51 @@ import {
   ElementRef,
   inject,
   OnDestroy,
-  OnInit,
+  Signal,
   signal,
   viewChild,
 } from '@angular/core';
+import { Button } from '@shared/components/button/button';
 import { GameService } from '@core/services/game-service';
+import { ScreenTimer } from '@features/game/components/screen-timer/screen-timer';
 import { LoadingService } from '@core/services/loading-service';
 import { SettingsService } from '@core/services/settings-service';
-import { GameSettingsMap } from '@features/home/model/GameSetting';
-import { SoundSettingsMap } from '@features/home/model/SoundSetting';
+import { GameSettingOptions } from '@features/home/model/GameSetting';
+import { SoundSettingOptions } from '@features/home/model/SoundSetting';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-game',
-  imports: [],
+  imports: [ScreenTimer, Button],
   templateUrl: './game.html',
   styleUrl: './game.scss',
 })
-export class Game implements OnInit, OnDestroy, AfterViewInit {
+export class Game implements OnDestroy, AfterViewInit {
   settingsService = inject(SettingsService);
   loadingService = inject(LoadingService);
   gameService = inject(GameService);
+  private router = inject(Router);
 
   audioPlayer = viewChild.required<ElementRef<HTMLAudioElement>>('audioPlayer');
   videoPlayer = viewChild.required<ElementRef<HTMLVideoElement>>('videoPlayer');
   settings: {
-    gameSettings: GameSettingsMap;
-    soundSettings: SoundSettingsMap;
+    gameSettings: GameSettingOptions;
+    soundSettings: SoundSettingOptions;
   };
 
+  isLoadingNextTrack = signal(true);
+  isAudioPlaying = signal(false);
   isVideoVisible = signal(false);
+
+  timerSeconds!: Signal<number>;
+  timerRunning = signal(false);
+
+  currentTracks = signal(1);
 
   constructor() {
     this.settings = this.settingsService.getAllSettingsSimplified();
-  }
-
-  async ngOnInit() {
-    this.loadingService.showLoading();
-
-    await this.gameService.setupGame();
-
-    this.loadingService.showPressStart(() => this.startGame());
+    // console.log(Number(this.settings.gameSettings.timeDifficulty));
+    this.timerSeconds = signal(10);
   }
 
   ngOnDestroy() {
@@ -56,21 +61,30 @@ export class Game implements OnInit, OnDestroy, AfterViewInit {
     this.loadingService.hide();
   }
 
-  startGame(): void {
-    this.playTrack();
+  navigateTo(route: string) {
+    this.router.navigate([route]);
   }
 
-  ngAfterViewInit() {
+  startGame(): void {
+    this.audioPlayer().nativeElement.play();
+    this.timerRunning.set(true);
+  }
+
+  async ngAfterViewInit() {
+    this.loadingService.showLoading();
+
+    await this.gameService.setupGame();
+
+    await this.gameService.preloadNextAudioTrack();
+    await this.gameService.preloadNextVideoTrack();
+
+    this.gameService.nextTrack();
+
     const audio = this.audioPlayer().nativeElement;
     const video = this.videoPlayer().nativeElement;
 
     audio.addEventListener('ended', this.onAudioEnded);
     video.addEventListener('ended', this.onVideoEnded);
-  }
-
-  playTrack() {
-    const audio = this.audioPlayer().nativeElement;
-    const video = this.videoPlayer().nativeElement;
 
     const track = this.gameService.currentTrack();
     if (!track) return;
@@ -81,33 +95,48 @@ export class Game implements OnInit, OnDestroy, AfterViewInit {
     audio.load();
     video.load();
 
-    audio.play();
+    this.loadingService.showPressStart(() => this.startGame());
   }
 
   onAudioEnded = () => {
     this.isVideoVisible.set(true);
     this.videoPlayer().nativeElement.play();
+
+    const audio = this.audioPlayer().nativeElement;
+
     this.gameService.preloadNextAudioTrack();
+
+    const nextTrack = this.gameService.getNextTrack();
+
+    if (!nextTrack) return;
+
+    audio.src = nextTrack.audioUrl;
+
+    audio.load();
   };
 
   onVideoEnded = () => {
     this.isVideoVisible.set(false);
-    const audio = this.audioPlayer().nativeElement;
+    this.audioPlayer().nativeElement.play();
+    this.timerRunning.set(true);
+
     const video = this.videoPlayer().nativeElement;
 
     this.gameService.preloadNextVideoTrack();
 
     this.gameService.nextTrack();
 
-    const track = this.gameService.currentTrack();
-    if (!track) return;
+    const nextTrack = this.gameService.currentTrack();
+    if (!nextTrack) return;
 
-    audio.src = track.audioUrl;
-    video.src = track.videoUrl;
+    video.src = nextTrack.videoUrl;
 
-    audio.load();
     video.load();
 
-    audio.play();
+    this.currentTracks.update((v) => ++v);
   };
+
+  onTimerEnd() {
+    this.timerRunning.set(false);
+  }
 }
