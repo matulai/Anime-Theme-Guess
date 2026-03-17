@@ -1,6 +1,25 @@
 <div class="game">
   <audio #audioPlayer></audio>
+  <p class="game__text" [style.visibility]="isVideoVisible() ? '' : 'hidden'">
+    {{ this.gameService.currentTrack()?.animeName }}
+  </p>
   <div class="game__video-container">
-    <video #videoPlayer class="video-dark" [class.visible]="isVideoVisible()"></video>
+    <div class="game__video-container__player">
+      <video #videoPlayer></video>
+    </div>
+    <div class="video-overlay" [class.hidden]="isVideoVisible()"></div>
+    @if (!isVideoVisible() && timerRunning()) {
+      <app-screen-timer
+        [seconds]="timerSeconds()"
+        [running]="timerRunning()"
+        (finished)="onTimerEnd()"
+      />
+    }
   </div>
+  <div class="game__button-container">
+    <app-button [onClick]="() => this.navigateTo('/')" ]>MENU</app-button>
+  </div>
+  <p class="game__count">
+    {{ currentTracks() }}
+  </p>
 </div>

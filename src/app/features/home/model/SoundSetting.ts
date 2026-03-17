@@ -6,4 +6,6 @@ export interface SoundSetting {
   description: Description[];
 }
 
-export type SoundSettingsMap = Record<string, number>;
+export interface SoundSettingOptions {
+  themeVolume: number;
+}
