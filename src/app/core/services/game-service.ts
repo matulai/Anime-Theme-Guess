@@ -29,7 +29,9 @@ export class GameService {
     const tracks: Track[] = await firstValueFrom(
       this.themeApi.getPlaylist(settings.gameSettings.themesDifficulty as Difficulty),
     );
-    this.gameTrackQueue = this.shuffle(tracks).map((track) => this.mapToGameTrack(track));
+    this.gameTrackQueue = this.shuffle(
+      tracks.slice(0, Number(settings.gameSettings.themesPerDifficult)),
+    ).map((track) => this.mapToGameTrack(track));
   }
 
   getNextTrack() {
