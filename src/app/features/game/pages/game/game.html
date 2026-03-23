@@ -1,11 +1,13 @@
 <div class="game">
-  <audio #audioPlayer></audio>
+  <audio #audioPlayer1 preload="auto"></audio>
+  <audio #audioPlayer2 preload="auto"></audio>
   <p class="game__text" [style.visibility]="isVideoVisible() ? '' : 'hidden'">
-    {{ this.gameService.currentTrack()?.animeName }}
+    {{ `${this.gameService.currentTrack()?.animeName} (${this.gameService.currentTrack()?.slug})` }}
   </p>
   <div class="game__video-container">
     <div class="game__video-container__player">
-      <video #videoPlayer></video>
+      <video #videoPlayer1 preload="auto"></video>
+      <video #videoPlayer2 preload="auto"></video>
     </div>
     <div class="video-overlay" [class.hidden]="isVideoVisible()"></div>
     @if (!isVideoVisible() && timerRunning()) {
