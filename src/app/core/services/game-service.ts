@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { ElementRef, inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { SoundSettingOptions } from '@features/home/model/SoundSetting';
@@ -29,9 +29,9 @@ export class GameService {
     const tracks: Track[] = await firstValueFrom(
       this.themeApi.getPlaylist(settings.gameSettings.themesDifficulty as Difficulty),
     );
-    this.gameTrackQueue = this.shuffle(
-      tracks.slice(0, Number(settings.gameSettings.themesPerDifficult)),
-    ).map((track) => this.mapToGameTrack(track));
+    this.gameTrackQueue = this.shuffle(tracks)
+      .slice(0, Number(settings.gameSettings.themesPerDifficult))
+      .map((track) => this.mapToGameTrack(track));
   }
 
   getNextTrack() {
@@ -52,36 +52,31 @@ export class GameService {
     this.currentTrack.set(next);
   }
 
-  async preloadNextAudioTrack() {
+  async preloadNextAudioTrack(nextAudioPlayer: HTMLAudioElement) {
     const nextAudioTrack = this.gameTrackQueue[0];
-
     if (!nextAudioTrack) return;
 
-    const audio = document.createElement('audio');
+    nextAudioPlayer.src = nextAudioTrack.audioUrl;
+    nextAudioPlayer.preload = 'auto';
+    nextAudioPlayer.load();
 
-    audio.src = nextAudioTrack.audioUrl;
-    audio.preload = 'auto';
-
-    // Ver que es esto
     return new Promise<void>((resolve) => {
-      audio.oncanplaythrough = () => resolve();
-      audio.onerror = () => resolve(); // fallback
+      nextAudioPlayer.oncanplay = () => resolve();
+      nextAudioPlayer.onerror = () => resolve(); // fallback
     });
   }
 
-  async preloadNextVideoTrack() {
+  async preloadNextVideoTrack(nextVideoPlayer: HTMLVideoElement) {
     const nextVideoTrack = this.gameTrackQueue[0];
-
     if (!nextVideoTrack) return;
 
-    const video = document.createElement('video');
-
-    video.src = nextVideoTrack.videoUrl;
-    video.preload = 'auto';
+    nextVideoPlayer.src = nextVideoTrack.videoUrl;
+    nextVideoPlayer.preload = 'auto';
+    nextVideoPlayer.load();
 
     return new Promise<void>((resolve) => {
-      video.oncanplaythrough = () => resolve();
-      video.onerror = () => resolve(); // fallback
+      nextVideoPlayer.oncanplay = () => resolve();
+      nextVideoPlayer.onerror = () => resolve(); // fallback
     });
   }
 
