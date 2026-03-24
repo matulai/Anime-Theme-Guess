@@ -1,34 +1,19 @@
 import { Component, effect, input, output, signal } from '@angular/core';
 
 @Component({
-  selector: 'app-screen-timer',
+  selector: 'app-progress-bar',
   imports: [],
-  template: `<p>{{ time() }}</p>`,
-  styles: [
-    `
-      :host {
-        position: absolute;
-        z-index: 10;
-      }
-
-      p {
-        font-size: 64px;
-        font-weight: 700;
-        letter-spacing: 0.1rem;
-        color: var(--text-color-primary);
-      }
-    `,
-  ],
+  template: ` <div class="progress-bar" [style.width.%]="progress()"></div> `,
+  styleUrl: './progress-bar.scss',
 })
-export class ScreenTimer {
+export class ProgressBar {
   seconds = input.required<number>();
   running = input<boolean>(false);
 
   finished = output<void>();
 
-  time = signal(0);
-
-  private intervalId: any;
+  progress = signal(0);
+  intervalId: any;
 
   constructor() {
     effect(() => {
@@ -40,22 +25,25 @@ export class ScreenTimer {
     });
   }
 
-  private start() {
-    this.stop();
+  start() {
+    const intervalTime = 1000; // cada 1s
+    const step = (intervalTime / (this.seconds() * 1000)) * 100;
 
-    this.time.set(this.seconds());
+    this.progress.set(0);
 
     this.intervalId = setInterval(() => {
-      this.time.update((t) => {
-        if (t <= 1) {
+      this.progress.update((v) => {
+        const currentProgress = v + step;
+        if (currentProgress >= 100) {
+          this.progress.set(100);
           this.stop();
-          console.log('emited');
           this.finished.emit();
           return 0;
+        } else {
+          return currentProgress;
         }
-        return t - 1;
       });
-    }, 1000);
+    }, intervalTime);
   }
 
   private stop() {
