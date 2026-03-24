@@ -8,18 +8,19 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { Button } from '@shared/components/button/button';
 import { GameService } from '@core/services/game-service';
+import { ProgressBar } from '@features/game/components/progress-bar/progress-bar';
 import { ScreenTimer } from '@features/game/components/screen-timer/screen-timer';
 import { LoadingService } from '@core/services/loading-service';
 import { SettingsService } from '@core/services/settings-service';
 import { GameSettingOptions } from '@features/home/model/GameSetting';
 import { SoundSettingOptions } from '@features/home/model/SoundSetting';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-game',
-  imports: [ScreenTimer, Button],
+  imports: [ScreenTimer, Button, ProgressBar],
   templateUrl: './game.html',
   styleUrl: './game.scss',
 })
@@ -40,8 +41,11 @@ export class Game implements OnDestroy, AfterViewInit {
     soundSettings: SoundSettingOptions;
   };
 
-  isLoadingNextTrack = signal(true);
+  willBePlayedVideo1 = signal(true);
   isVideoVisible = signal(false);
+
+  isLoadingNextTrack = signal(false);
+  onEndenLoadingNextTrack = signal(() => {});
 
   timerSeconds!: Signal<number>;
   timerRunning = signal(false);
@@ -75,6 +79,8 @@ export class Game implements OnDestroy, AfterViewInit {
     audioPlayer2.onended = () => this.onAudioEnded(videoPlayer2, audioPlayer2, audioPlayer1);
     videoPlayer2.onended = () => this.onVideoEnded(audioPlayer1, videoPlayer2, videoPlayer1);
 
+    this.onEndenLoadingNextTrack.set(() => this.playNextTrack(audioPlayer1));
+
     this.loadingService.showPressStart(() => this.startGame());
   }
 
@@ -82,9 +88,8 @@ export class Game implements OnDestroy, AfterViewInit {
     this.router.navigate([route]);
   }
 
-  async startGame(): Promise<void> {
-    await this.audioPlayer1().nativeElement.play();
-    this.timerRunning.set(true);
+  startGame() {
+    this.isLoadingNextTrack.set(true);
   }
 
   async onAudioEnded(
@@ -108,9 +113,15 @@ export class Game implements OnDestroy, AfterViewInit {
     nextVideoPlayer: HTMLVideoElement,
   ): Promise<void> {
     this.isVideoVisible.set(false);
-    await audioPlayer.play();
-    this.timerRunning.set(true);
     this.currentTracks.update((v) => ++v);
+    this.willBePlayedVideo1.update((v) => !v);
+
+    audioPlayer.muted = true;
+    await audioPlayer.play();
+    audioPlayer.pause;
+    audioPlayer.currentTime = 0;
+    this.onEndenLoadingNextTrack.set(() => this.playNextTrack(audioPlayer));
+    this.isLoadingNextTrack.set(true);
 
     actualVideoPlayer.pause();
     actualVideoPlayer.removeAttribute('src');
@@ -122,6 +133,14 @@ export class Game implements OnDestroy, AfterViewInit {
 
   onTimerEnd() {
     this.timerRunning.set(false);
+  }
+
+  playNextTrack(audioPlayer: HTMLAudioElement) {
+    console.log('called');
+    this.isLoadingNextTrack.set(false);
+    audioPlayer.muted = false;
+    audioPlayer.play();
+    this.timerRunning.set(true);
   }
 
   ngOnDestroy() {

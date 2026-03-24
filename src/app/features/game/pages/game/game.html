@@ -5,18 +5,25 @@
     {{ `${this.gameService.currentTrack()?.animeName} (${this.gameService.currentTrack()?.slug})` }}
   </p>
   <div class="game__video-container">
-    <div class="game__video-container__player">
+    <div class="game__video-container__player" [class.hidden]="!willBePlayedVideo1()">
       <video #videoPlayer1 preload="auto"></video>
+    </div>
+    <div class="game__video-container__player" [class.hidden]="willBePlayedVideo1()">
       <video #videoPlayer2 preload="auto"></video>
     </div>
     <div class="video-overlay" [class.hidden]="isVideoVisible()"></div>
-    @if (!isVideoVisible() && timerRunning()) {
+    @if (!isVideoVisible() && isLoadingNextTrack()) {
       <app-screen-timer
-        [seconds]="timerSeconds()"
-        [running]="timerRunning()"
-        (finished)="onTimerEnd()"
+        [seconds]="3"
+        [running]="isLoadingNextTrack()"
+        (finished)="onEndenLoadingNextTrack()()"
       />
     }
+    <app-progress-bar
+      [seconds]="timerSeconds()"
+      [running]="timerRunning()"
+      (finished)="onTimerEnd()"
+    />
   </div>
   <div class="game__button-container">
     <app-button [onClick]="() => this.navigateTo('/')" ]>MENU</app-button>
