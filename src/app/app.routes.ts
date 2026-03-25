@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { Settings } from '@features/home/pages/settings/settings';
+import { NotFound } from '@features/home/pages/not-found/not-found';
 import { EndGame } from '@features/game/pages/end-game/end-game';
 import { Layout } from '@core/layout/layout';
 import { Menu } from '@features/home/pages/menu/menu';
@@ -26,6 +27,10 @@ export const routes: Routes = [
       {
         path: 'end-game',
         component: EndGame,
+      },
+      {
+        path: '**',
+        component: NotFound,
       },
     ],
   },
