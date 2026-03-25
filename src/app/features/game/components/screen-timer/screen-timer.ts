@@ -3,7 +3,7 @@ import { Component, effect, input, output, signal } from '@angular/core';
 @Component({
   selector: 'app-screen-timer',
   imports: [],
-  template: `<p>{{ time() }}</p>`,
+  template: `<p [style.opacity]="running() ? 100 : 0">{{ time() }}</p>`,
   styles: [
     `
       :host {
@@ -49,7 +49,6 @@ export class ScreenTimer {
       this.time.update((t) => {
         if (t <= 1) {
           this.stop();
-          console.log('emited');
           this.finished.emit();
           return 0;
         }

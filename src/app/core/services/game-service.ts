@@ -1,4 +1,4 @@
-import { ElementRef, inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { SoundSettingOptions } from '@features/home/model/SoundSetting';
@@ -34,14 +34,6 @@ export class GameService {
       .map((track) => this.mapToGameTrack(track));
   }
 
-  getNextTrack() {
-    if (this.gameTrackQueue.length < 2) {
-      return;
-    }
-
-    return this.gameTrackQueue[0];
-  }
-
   nextTrack() {
     if (this.gameTrackQueue.length === 0) {
       this.currentTrack.set(null);
@@ -50,20 +42,6 @@ export class GameService {
 
     const next = this.gameTrackQueue.shift()!;
     this.currentTrack.set(next);
-  }
-
-  async preloadNextAudioTrack(nextAudioPlayer: HTMLAudioElement) {
-    const nextAudioTrack = this.gameTrackQueue[0];
-    if (!nextAudioTrack) return;
-
-    nextAudioPlayer.src = nextAudioTrack.audioUrl;
-    nextAudioPlayer.preload = 'auto';
-    nextAudioPlayer.load();
-
-    return new Promise<void>((resolve) => {
-      nextAudioPlayer.oncanplay = () => resolve();
-      nextAudioPlayer.onerror = () => resolve(); // fallback
-    });
   }
 
   async preloadNextVideoTrack(nextVideoPlayer: HTMLVideoElement) {
