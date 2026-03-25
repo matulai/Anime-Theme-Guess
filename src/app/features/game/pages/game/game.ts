@@ -7,6 +7,7 @@ import {
   Signal,
   signal,
   viewChild,
+  WritableSignal,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Button } from '@shared/components/button/button';
@@ -30,9 +31,6 @@ export class Game implements OnDestroy, AfterViewInit {
   gameService = inject(GameService);
   private router = inject(Router);
 
-  audioPlayer1 = viewChild.required<ElementRef<HTMLAudioElement>>('audioPlayer1');
-  audioPlayer2 = viewChild.required<ElementRef<HTMLAudioElement>>('audioPlayer2');
-
   videoPlayer1 = viewChild.required<ElementRef<HTMLVideoElement>>('videoPlayer1');
   videoPlayer2 = viewChild.required<ElementRef<HTMLVideoElement>>('videoPlayer2');
 
@@ -45,10 +43,14 @@ export class Game implements OnDestroy, AfterViewInit {
   isVideoVisible = signal(false);
 
   isLoadingNextTrack = signal(false);
-  onEndenLoadingNextTrack = signal(() => {});
+  onLoadingNextTrackEnded = () => {};
 
   timerSeconds!: Signal<number>;
   timerRunning = signal(false);
+  onGuessTimeEnded = () => {};
+
+  actualVideoPlayer!: WritableSignal<HTMLVideoElement>;
+  nextVideoPlayer!: WritableSignal<HTMLVideoElement>;
 
   currentTracks = signal(1);
 
@@ -63,23 +65,21 @@ export class Game implements OnDestroy, AfterViewInit {
 
     await this.gameService.setupGame();
 
-    const audioPlayer1 = this.audioPlayer1().nativeElement;
-    const audioPlayer2 = this.audioPlayer2().nativeElement;
-
     const videoPlayer1 = this.videoPlayer1().nativeElement;
     const videoPlayer2 = this.videoPlayer2().nativeElement;
 
-    await this.gameService.preloadNextAudioTrack(audioPlayer1);
     await this.gameService.preloadNextVideoTrack(videoPlayer1);
 
     this.gameService.nextTrack();
 
-    audioPlayer1.onended = () => this.onAudioEnded(videoPlayer1, audioPlayer1, audioPlayer2);
-    videoPlayer1.onended = () => this.onVideoEnded(audioPlayer2, videoPlayer1, videoPlayer2);
-    audioPlayer2.onended = () => this.onAudioEnded(videoPlayer2, audioPlayer2, audioPlayer1);
-    videoPlayer2.onended = () => this.onVideoEnded(audioPlayer1, videoPlayer2, videoPlayer1);
+    this.actualVideoPlayer = signal(videoPlayer1);
+    this.nextVideoPlayer = signal(videoPlayer2);
 
-    this.onEndenLoadingNextTrack.set(() => this.playNextTrack(audioPlayer1));
+    videoPlayer1.onended = () => this.onNextOrEndedVideo();
+    videoPlayer2.onended = () => this.onNextOrEndedVideo();
+
+    this.onLoadingNextTrackEnded = () => this.playNextTrack(videoPlayer1, videoPlayer2);
+    this.onGuessTimeEnded = () => this.onShowCurrentVideo(videoPlayer1, videoPlayer2);
 
     this.loadingService.showPressStart(() => this.startGame());
   }
@@ -92,55 +92,55 @@ export class Game implements OnDestroy, AfterViewInit {
     this.isLoadingNextTrack.set(true);
   }
 
-  async onAudioEnded(
-    videoPlayer: HTMLVideoElement,
-    actualAudioPlayer: HTMLAudioElement,
-    nextAudioPlayer: HTMLAudioElement,
-  ): Promise<void> {
-    await videoPlayer.play();
-    this.isVideoVisible.set(true);
-
-    actualAudioPlayer.pause();
-    actualAudioPlayer.removeAttribute('src');
-    actualAudioPlayer.load();
-
-    await this.gameService.preloadNextAudioTrack(nextAudioPlayer);
-  }
-
-  async onVideoEnded(
-    audioPlayer: HTMLAudioElement,
-    actualVideoPlayer: HTMLVideoElement,
-    nextVideoPlayer: HTMLVideoElement,
-  ): Promise<void> {
+  onNextOrEndedVideo(): void {
     this.isVideoVisible.set(false);
-    this.currentTracks.update((v) => ++v);
     this.willBePlayedVideo1.update((v) => !v);
+    this.currentTracks.update((v) => v + 1);
 
-    audioPlayer.muted = true;
-    await audioPlayer.play();
-    audioPlayer.pause;
-    audioPlayer.currentTime = 0;
-    this.onEndenLoadingNextTrack.set(() => this.playNextTrack(audioPlayer));
-    this.isLoadingNextTrack.set(true);
+    this.actualVideoPlayer().pause();
+    this.actualVideoPlayer().removeAttribute('src');
+    this.actualVideoPlayer().load();
 
-    actualVideoPlayer.pause();
-    actualVideoPlayer.removeAttribute('src');
-    actualVideoPlayer.load();
+    // seteo el tiempo de donde empezara
+    this.nextVideoPlayer().muted = true;
+    this.nextVideoPlayer().currentTime = 0;
+    this.nextVideoPlayer().pause();
 
-    await this.gameService.preloadNextVideoTrack(nextVideoPlayer);
     this.gameService.nextTrack();
+
+    if (this.gameService.currentTrack() === null) {
+      this.navigateTo('/end-game');
+    }
+
+    this.isLoadingNextTrack.set(true);
   }
 
-  onTimerEnd() {
+  // Luego de terminar el tiempo para adivinar
+  onShowCurrentVideo(currentVideoPlayer: HTMLVideoElement, nextVideoPlayer: HTMLVideoElement) {
+    this.isVideoVisible.set(true);
     this.timerRunning.set(false);
+
+    // se supone que evita que use mucha memoria borrando del cache el anterior video.
+    nextVideoPlayer.src = '';
+
+    this.gameService.preloadNextVideoTrack(nextVideoPlayer);
+
+    this.onGuessTimeEnded = () => this.onShowCurrentVideo(nextVideoPlayer, currentVideoPlayer);
   }
 
-  playNextTrack(audioPlayer: HTMLAudioElement) {
-    console.log('called');
+  // Luego de terminar el tiempo de inicio del track
+  playNextTrack(currentVideoPlayer: HTMLVideoElement, nextVideoPlayer: HTMLVideoElement) {
     this.isLoadingNextTrack.set(false);
-    audioPlayer.muted = false;
-    audioPlayer.play();
+
+    currentVideoPlayer.muted = false;
+    currentVideoPlayer.play();
+
     this.timerRunning.set(true);
+
+    // No es buena practica pero estoy quemado.
+    this.onLoadingNextTrackEnded = () => this.playNextTrack(nextVideoPlayer, currentVideoPlayer);
+    this.nextVideoPlayer.set(nextVideoPlayer);
+    this.actualVideoPlayer.set(currentVideoPlayer);
   }
 
   ngOnDestroy() {

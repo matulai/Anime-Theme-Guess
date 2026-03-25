@@ -32,16 +32,22 @@
     }
   }
 
-  &__button-container {
+  &__button-menu-container {
     position: absolute;
     top: 16px;
     left: 12px;
   }
 
-  &__count {
+  &__button-next-container {
     position: absolute;
     top: 12px;
     right: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  &__count {
     color: var(--text-color-secondary);
     font-size: 32px;
     letter-spacing: 0.1rem;
@@ -59,7 +65,7 @@
   pointer-events: none;
 }
 
-.video-overlay.hidden {
+.hidden {
   opacity: 0;
 }
 

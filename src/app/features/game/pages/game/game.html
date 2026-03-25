@@ -1,34 +1,41 @@
 <div class="game">
-  <audio #audioPlayer1 preload="auto"></audio>
-  <audio #audioPlayer2 preload="auto"></audio>
   <p class="game__text" [style.visibility]="isVideoVisible() ? '' : 'hidden'">
     {{ `${this.gameService.currentTrack()?.animeName} (${this.gameService.currentTrack()?.slug})` }}
   </p>
   <div class="game__video-container">
-    <div class="game__video-container__player" [class.hidden]="!willBePlayedVideo1()">
+    <div
+      class="game__video-container__player"
+      [class.hidden]="!(isVideoVisible() && willBePlayedVideo1())"
+    >
       <video #videoPlayer1 preload="auto"></video>
     </div>
-    <div class="game__video-container__player" [class.hidden]="willBePlayedVideo1()">
+    <div
+      class="game__video-container__player"
+      [class.hidden]="!(isVideoVisible() && !willBePlayedVideo1())"
+    >
       <video #videoPlayer2 preload="auto"></video>
     </div>
     <div class="video-overlay" [class.hidden]="isVideoVisible()"></div>
-    @if (!isVideoVisible() && isLoadingNextTrack()) {
-      <app-screen-timer
-        [seconds]="3"
-        [running]="isLoadingNextTrack()"
-        (finished)="onEndenLoadingNextTrack()()"
-      />
-    }
+    <app-screen-timer
+      [seconds]="3"
+      [running]="isLoadingNextTrack()"
+      (finished)="onLoadingNextTrackEnded()"
+    />
     <app-progress-bar
       [seconds]="timerSeconds()"
       [running]="timerRunning()"
-      (finished)="onTimerEnd()"
+      (finished)="onGuessTimeEnded()"
     />
   </div>
-  <div class="game__button-container">
+  <div class="game__button-menu-container">
     <app-button [onClick]="() => this.navigateTo('/')" ]>MENU</app-button>
   </div>
-  <p class="game__count">
-    {{ currentTracks() }}
-  </p>
+  <div class="game__button-next-container">
+    @if (isVideoVisible()) {
+      <app-button [onClick]="() => this.onNextOrEndedVideo()" ]>NEXT</app-button>
+    }
+    <p class="game__count">
+      {{ currentTracks() }}
+    </p>
+  </div>
 </div>
