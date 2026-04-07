@@ -8,7 +8,7 @@ import { LoadingService } from '@core/services/loading-service';
   styleUrl: './loading-screen.scss',
   host: {
     '(window:keydown)': 'handlePressButton()',
-    '(window:touchstart)': 'handlePressButton()',
+    '(document:touchstart)': 'handlePressButton()',
   },
 })
 export class LoadingScreen {
