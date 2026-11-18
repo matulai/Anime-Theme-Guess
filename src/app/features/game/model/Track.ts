@@ -4,10 +4,13 @@ export interface AnimeImage {
 }
 
 export interface Anime {
-  name: string;
-  images: AnimeImage[];
+  title: {
+    romaji: string;
+  };
+  images: {
+    nodes: AnimeImage[];
+  };
 }
-
 export interface AnimeTheme {
   slug: string;
   anime: Anime;
@@ -31,9 +34,17 @@ export interface Track {
   video: TrackVideo;
 }
 
+// export interface PlaylistResponse {
+//   playlist: {
+//     tracks: Track[];
+//   };
+// }
+
 export interface PlaylistResponse {
-  playlist: {
-    tracks: Track[];
+  data: {
+    playlist: {
+      tracks: Track[];
+    };
   };
 }
 

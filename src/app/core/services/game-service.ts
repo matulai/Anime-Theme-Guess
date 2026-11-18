@@ -3,7 +3,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { SoundSettingOptions } from '@features/home/model/SoundSetting';
 import { GameSettingOptions } from '@features/home/model/GameSetting';
-import { ThemeTrack, Track } from '@features/game/model/Track';
+import { ThemeTrack } from '@features/game/model/Track';
 import { SettingsService } from './settings-service';
 import { ThemeApi } from './theme-api';
 
@@ -26,12 +26,13 @@ export class GameService {
       soundSettings: SoundSettingOptions;
     } = this.settingsService.getAllSettingsSimplified();
 
-    const tracks: Track[] = await firstValueFrom(
+    const tracks: ThemeTrack[] = await firstValueFrom(
       this.themeApi.getPlaylist(settings.gameSettings.themesDifficulty as Difficulty),
     );
-    this.gameTrackQueue = this.shuffle(tracks)
-      .slice(0, Number(settings.gameSettings.themesPerDifficult))
-      .map((track) => this.mapToGameTrack(track));
+    this.gameTrackQueue = this.shuffle(tracks).slice(
+      0,
+      Number(settings.gameSettings.themesPerDifficult),
+    );
   }
 
   nextTrack() {
@@ -68,15 +69,5 @@ export class GameService {
     }
 
     return arr;
-  }
-
-  private mapToGameTrack(track: Track): ThemeTrack {
-    return {
-      slug: track.animethemeentry.animetheme.slug,
-      animeName: track.animethemeentry.animetheme.anime.name,
-      image: track.animethemeentry.animetheme.anime.images[1].link,
-      videoUrl: track.video.link,
-      audioUrl: track.video.audio.link,
-    };
   }
 }
